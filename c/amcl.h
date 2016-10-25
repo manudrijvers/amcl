@@ -817,6 +817,13 @@ extern void BIG_fromBytes(BIG x,char *a);
 	@param s byte array length
  */
 extern void BIG_fromBytesLen(BIG x,char *a,int s);
+/**@brief Convert to DBIG number from byte array of given length
+ *
+   @param x DBIG number
+   @param a byte array
+   @param s byte array length
+ */
+extern void BIG_dfromBytesLen(DBIG x,char *a,int s);
 /**	@brief Outputs a DBIG number to the console
  *
 	@param x a DBIG number
@@ -1060,8 +1067,9 @@ extern int BIG_dnbits(DBIG x);
 	Slow but rarely used
 	@param x BIG number to be reduced mod n
 	@param n The modulus
+	@return 0 in case of success, 1 in case of error
  */
-extern void BIG_mod(BIG x,BIG n);
+extern int BIG_mod(BIG x,BIG n);
 /**	@brief Divide x by n - output normalised
  *
 	Slow but rarely used
@@ -1138,8 +1146,9 @@ extern void BIG_randomnum(BIG x,BIG n,csprng *r);
 	@param y BIG number
 	@param z BIG number
 	@param n The BIG Modulus
+	@return 0 in case of success, 1 in case of error
  */
-extern void BIG_modmul(BIG x,BIG y,BIG z,BIG n);
+extern int BIG_modmul(BIG x,BIG y,BIG z,BIG n);
 /**	@brief  Calculate x=y/z mod n
  *
 	Slow method for modular division
@@ -1147,24 +1156,27 @@ extern void BIG_modmul(BIG x,BIG y,BIG z,BIG n);
 	@param y BIG number
 	@param z BIG number
 	@param n The BIG Modulus
+	@return 0 in case of success, 1 in case of error
  */
-extern void BIG_moddiv(BIG x,BIG y,BIG z,BIG n);
+extern int BIG_moddiv(BIG x,BIG y,BIG z,BIG n);
 /**	@brief  Calculate x=y^2 mod n
  *
 	Slow method for modular squaring
 	@param x BIG number, on exit = y^2 mod n
 	@param y BIG number
 	@param n The BIG Modulus
+	@return 0 in case of success, 1 in case of error
  */
-extern void BIG_modsqr(BIG x,BIG y,BIG n);
+extern int BIG_modsqr(BIG x,BIG y,BIG n);
 /**	@brief  Calculate x=-y mod n
  *
 	Modular negation
 	@param x BIG number, on exit = -y mod n
 	@param y BIG number
 	@param n The BIG Modulus
+	@return 0 in case of success, 1 in case of error
  */
-extern void BIG_modneg(BIG x,BIG y,BIG n);
+extern int BIG_modneg(BIG x,BIG y,BIG n);
 /**	@brief  Calculate jacobi Symbol (x/y)
  *
 	@param x BIG number
@@ -1178,8 +1190,9 @@ extern int BIG_jacobi(BIG x,BIG y);
 	@param x BIG number, on exit = 1/y mod n
 	@param y BIG number
 	@param n The BIG Modulus
+	@return 0 in case of success, 1 in case of error
  */
-extern void BIG_invmodp(BIG x,BIG y,BIG n);
+extern int BIG_invmodp(BIG x,BIG y,BIG n);
 /** @brief Calculate x=x mod 2^m
  *
 	Truncation 

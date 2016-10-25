@@ -254,6 +254,21 @@ void BIG_fromBytesLen(BIG a,char *b,int s)
 #endif
 }
 
+/* Convert to DBIG number from byte array of given length */
+void BIG_dfromBytesLen(DBIG a,char *b,int s)
+{
+    int i,len=s;
+    BIG_dzero(a);
+
+    for (i=0; i<len; i++)
+    {
+        BIG_dshl(a,8);
+        a[0]+=(int)(unsigned char)b[i];
+    }
+#ifdef DEBUG_NORM
+    a[NLEN]=0;
+#endif
+}
 
 /* SU= 88 */
 void BIG_doutput(DBIG a)
@@ -995,13 +1010,16 @@ int BIG_dnbits(BIG a)
 
 /* Set b=b mod c */
 /* SU= 16 */
-void BIG_mod(BIG b,BIG c)
+int BIG_mod(BIG b,BIG c)
 {
     int k=0;
 
+    if (BIG_iszilch(c))
+        return 1;
+
     BIG_norm(b);
     if (BIG_comp(b,c)<0)
-        return;
+        return 0;
     do
     {
         BIG_fshl(c,1);
@@ -1019,8 +1037,8 @@ void BIG_mod(BIG b,BIG c)
         }
         k--;
     }
+    return 0;
 }
-
 /* Set a=b mod c, b is destroyed. Slow but rarely used. */
 /* SU= 96 */
 void BIG_dmod(BIG a,DBIG b,BIG c)
@@ -1246,39 +1264,51 @@ void BIG_randomnum(BIG m,BIG q,csprng *rng)
 
 /* Set r=a*b mod m */
 /* SU= 96 */
-void BIG_modmul(BIG r,BIG a,BIG b,BIG m)
+int BIG_modmul(BIG r,BIG a,BIG b,BIG m)
 {
+    if (BIG_iszilch(m))
+        return 1;
     DBIG d;
     BIG_mod(a,m);
     BIG_mod(b,m);
 //BIG_norm(a); BIG_norm(b);
     BIG_mul(d,a,b);
     BIG_dmod(r,d,m);
+    return 0;
 }
 
 /* Set a=a*a mod m */
 /* SU= 88 */
-void BIG_modsqr(BIG r,BIG a,BIG m)
+int BIG_modsqr(BIG r,BIG a,BIG m)
 {
+    if (BIG_iszilch(m))
+        return 1;
     DBIG d;
     BIG_mod(a,m);
 //BIG_norm(a);
     BIG_sqr(d,a);
     BIG_dmod(r,d,m);
+    return 0;
 }
 
 /* Set r=-a mod m */
 /* SU= 16 */
-void BIG_modneg(BIG r,BIG a,BIG m)
+int BIG_modneg(BIG r,BIG a,BIG m)
 {
+    if (BIG_iszilch(m))
+        return 1;
     BIG_mod(a,m);
     BIG_sub(r,m,a);
+    BIG_mod(r,m);
+    return 0;
 }
 
 /* Set a=a/b mod m */
 /* SU= 136 */
-void BIG_moddiv(BIG r,BIG a,BIG b,BIG m)
+int BIG_moddiv(BIG r,BIG a,BIG b,BIG m)
 {
+    if (BIG_iszilch(m))
+        return 1;
     DBIG d;
     BIG z;
     BIG_mod(a,m);
@@ -1286,12 +1316,15 @@ void BIG_moddiv(BIG r,BIG a,BIG b,BIG m)
 //BIG_norm(a); BIG_norm(z);
     BIG_mul(d,a,z);
     BIG_dmod(r,d,m);
+    return 0;
 }
 
 /* Get jacobi Symbol (a/p). Returns 0, 1 or -1 */
 /* SU= 216 */
 int BIG_jacobi(BIG a,BIG p)
 {
+    if (BIG_iszilch(p))
+        return -1;
     int n8,k,m=0;
     BIG t,x,n,zilch,one;
     BIG_one(one);
@@ -1328,8 +1361,10 @@ int BIG_jacobi(BIG a,BIG p)
 
 /* Set r=1/a mod p. Binary method */
 /* SU= 240 */
-void BIG_invmodp(BIG r,BIG a,BIG p)
+int BIG_invmodp(BIG r,BIG a,BIG p)
 {
+    if (BIG_iszilch(p))
+        return 1;
     BIG u,v,x1,x2,t,one;
     BIG_mod(a,p);
     BIG_copy(u,a);
@@ -1389,6 +1424,7 @@ void BIG_invmodp(BIG r,BIG a,BIG p)
         BIG_copy(r,x1);
     else
         BIG_copy(r,x2);
+    return 0;
 }
 
 /* set x = x mod 2^m */
