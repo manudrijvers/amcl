@@ -1010,16 +1010,13 @@ int BIG_dnbits(BIG a)
 
 /* Set b=b mod c */
 /* SU= 16 */
-int BIG_mod(BIG b,BIG c)
+void BIG_mod(BIG b,BIG c)
 {
     int k=0;
 
-    if (BIG_iszilch(c))
-        return 1;
-
     BIG_norm(b);
     if (BIG_comp(b,c)<0)
-        return 0;
+        return;
     do
     {
         BIG_fshl(c,1);
@@ -1037,7 +1034,6 @@ int BIG_mod(BIG b,BIG c)
         }
         k--;
     }
-    return 0;
 }
 /* Set a=b mod c, b is destroyed. Slow but rarely used. */
 /* SU= 96 */
@@ -1264,51 +1260,40 @@ void BIG_randomnum(BIG m,BIG q,csprng *rng)
 
 /* Set r=a*b mod m */
 /* SU= 96 */
-int BIG_modmul(BIG r,BIG a,BIG b,BIG m)
+void BIG_modmul(BIG r,BIG a,BIG b,BIG m)
 {
-    if (BIG_iszilch(m))
-        return 1;
     DBIG d;
     BIG_mod(a,m);
     BIG_mod(b,m);
 //BIG_norm(a); BIG_norm(b);
     BIG_mul(d,a,b);
     BIG_dmod(r,d,m);
-    return 0;
 }
 
 /* Set a=a*a mod m */
 /* SU= 88 */
-int BIG_modsqr(BIG r,BIG a,BIG m)
+void BIG_modsqr(BIG r,BIG a,BIG m)
 {
-    if (BIG_iszilch(m))
-        return 1;
     DBIG d;
     BIG_mod(a,m);
 //BIG_norm(a);
     BIG_sqr(d,a);
     BIG_dmod(r,d,m);
-    return 0;
 }
 
 /* Set r=-a mod m */
 /* SU= 16 */
-int BIG_modneg(BIG r,BIG a,BIG m)
+void BIG_modneg(BIG r,BIG a,BIG m)
 {
-    if (BIG_iszilch(m))
-        return 1;
     BIG_mod(a,m);
     BIG_sub(r,m,a);
     BIG_mod(r,m);
-    return 0;
 }
 
 /* Set a=a/b mod m */
 /* SU= 136 */
-int BIG_moddiv(BIG r,BIG a,BIG b,BIG m)
+void BIG_moddiv(BIG r,BIG a,BIG b,BIG m)
 {
-    if (BIG_iszilch(m))
-        return 1;
     DBIG d;
     BIG z;
     BIG_mod(a,m);
@@ -1316,15 +1301,12 @@ int BIG_moddiv(BIG r,BIG a,BIG b,BIG m)
 //BIG_norm(a); BIG_norm(z);
     BIG_mul(d,a,z);
     BIG_dmod(r,d,m);
-    return 0;
 }
 
 /* Get jacobi Symbol (a/p). Returns 0, 1 or -1 */
 /* SU= 216 */
 int BIG_jacobi(BIG a,BIG p)
 {
-    if (BIG_iszilch(p))
-        return -1;
     int n8,k,m=0;
     BIG t,x,n,zilch,one;
     BIG_one(one);
@@ -1361,10 +1343,8 @@ int BIG_jacobi(BIG a,BIG p)
 
 /* Set r=1/a mod p. Binary method */
 /* SU= 240 */
-int BIG_invmodp(BIG r,BIG a,BIG p)
+void BIG_invmodp(BIG r,BIG a,BIG p)
 {
-    if (BIG_iszilch(p))
-        return 1;
     BIG u,v,x1,x2,t,one;
     BIG_mod(a,p);
     BIG_copy(u,a);
@@ -1424,7 +1404,6 @@ int BIG_invmodp(BIG r,BIG a,BIG p)
         BIG_copy(r,x1);
     else
         BIG_copy(r,x2);
-    return 0;
 }
 
 /* set x = x mod 2^m */
