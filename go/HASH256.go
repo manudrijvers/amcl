@@ -27,7 +27,7 @@ under the License.
  */
 
 
-package main
+package amcl
 
 //import "fmt"
 

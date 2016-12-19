@@ -20,7 +20,7 @@ under the License.
 /* MiotCL double length DBIG number class */ 
 
 
-package main
+package amcl
 
 import "strconv"
 //import "fmt"

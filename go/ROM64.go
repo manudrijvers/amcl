@@ -19,7 +19,7 @@ under the License.
 
 /* Fixed Data in ROM - Field and Curve parameters */
 
-package main
+package amcl
 
 /* First the 32/64-bit dependent BIG code */
 
@@ -315,10 +315,10 @@ const BLS_CURVE int=1
 //  const AES_S uint= 0
 
 // BN254 Curve
-//const MODBITS uint=254 /* Number of bits in Modulus */
-//const MOD8 uint=3  /* Modulus mod 8 */
-//const BASEBITS uint=56
-//const AES_S uint= 0
+const MODBITS uint=254 /* Number of bits in Modulus */
+const MOD8 uint=3  /* Modulus mod 8 */
+const BASEBITS uint=56
+const AES_S uint= 0
 
 // BN454 Curve
 //const MODBITS uint=454 /* Number of bits in Modulus */
@@ -327,10 +327,10 @@ const BLS_CURVE int=1
 //const AES_S uint= 128
 
 // BLS383 Curve
-const MODBITS uint=383 /* Number of bits in Modulus */
-const MOD8 uint=3  /* Modulus mod 8 */
-const BASEBITS uint=56
-const AES_S uint= 0
+//const MODBITS uint=383 /* Number of bits in Modulus */
+//const MOD8 uint=3  /* Modulus mod 8 */
+//const BASEBITS uint=56
+//const AES_S uint= 0
 
 // BLS455 Curve
 //const MODBITS uint=455 /* Number of bits in Modulus */
@@ -483,9 +483,9 @@ const P_TBITS uint=(P_MBITS%BASEBITS)
 
 
 // BN254 Curve
-//  const MODTYPE int=NOT_SPECIAL
-//  var Modulus= [...]int64  {0x13,0x13A7,0x80000000086121,0x40000001BA344D,0x25236482}
-//  const MConst int64=0x435E50D79435E5
+const MODTYPE int=NOT_SPECIAL
+var Modulus= [...]int64  {0x13,0x13A7,0x80000000086121,0x40000001BA344D,0x25236482}
+const MConst int64=0x435E50D79435E5
 
 // BN454 Curve
 //  const MODTYPE int=NOT_SPECIAL
@@ -493,9 +493,9 @@ const P_TBITS uint=(P_MBITS%BASEBITS)
 //  const MConst int64=0xF33C46ED79435E5
 
 // BLS383 Curve
-  const MODTYPE int=NOT_SPECIAL
-  var Modulus= [...]int64  {0xACAAB52AAD556B,0x1BB01475F75D7A,0xCF73083D5D7520,0x531820F99EB16,0x2C01355A68EA32,0x5C6105C552A785,0x7AC52080A9F7}
-  const MConst int64=0xA59AB3B123D0BD
+//  const MODTYPE int=NOT_SPECIAL
+//  var Modulus= [...]int64  {0xACAAB52AAD556B,0x1BB01475F75D7A,0xCF73083D5D7520,0x531820F99EB16,0x2C01355A68EA32,0x5C6105C552A785,0x7AC52080A9F7}
+//  const MConst int64=0xA59AB3B123D0BD
 
 // BLS455 Curve
 //  const MODTYPE int=NOT_SPECIAL
@@ -746,7 +746,6 @@ const GT_STRONG bool=true
 
 */
 // BN254 Curve
-/*
 const CURVETYPE int=WEIERSTRASS
 const CURVE_PAIRING_TYPE int=BN_CURVE
 const CURVE_A int= 0
@@ -772,7 +771,7 @@ const USE_GLV bool=true
 const USE_GS_G2 bool=true
 const USE_GS_GT bool=true	
 const GT_STRONG bool=false
-*/
+
 // BN454 Curve
 /*
 const CURVETYPE int=WEIERSTRASS
@@ -806,7 +805,7 @@ const GT_STRONG bool=false
 
 
 // BLS383 Curve
-
+/*
 const CURVETYPE int=WEIERSTRASS
 const CURVE_PAIRING_TYPE int=BLS_CURVE
 const CURVE_A int= 0
@@ -836,6 +835,7 @@ const USE_GLV bool=true
 const USE_GS_G2 bool=true
 const USE_GS_GT bool=true	
 const GT_STRONG bool=false
+*/
 
 // BLS455 Curve
 /*

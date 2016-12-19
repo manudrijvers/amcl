@@ -19,7 +19,7 @@ under the License.
 
 /* Fixed Data in ROM - Field and Curve parameters */
 
-package main
+package amcl
 
 /* First the 32/64-bit dependent BIG code */
 

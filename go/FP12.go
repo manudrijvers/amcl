@@ -20,7 +20,7 @@ under the License.
 /* MiotCL Fp^12 functions */
 /* FP12 elements are of the form a+i.b+i^2.c */
 
-package main
+package amcl
 
 //import "fmt"
 

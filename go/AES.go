@@ -19,7 +19,7 @@ under the License.
 
 /* AES Encryption */ 
 
-package main
+package amcl
 
 //import "fmt"
 

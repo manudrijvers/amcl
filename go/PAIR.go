@@ -19,7 +19,7 @@ under the License.
 
 /* MiotCL BN Curve Pairing functions */
 
-package main
+package amcl
 
 //import "fmt"
 

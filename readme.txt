@@ -1,10 +1,7 @@
-AMCL is presented in what might be called a pre-library state.
+This is a fork of github.com/miracl/amcl that allows the go version
+of amcl to be used as a library. That is, we replaced package main
+with package amcl and exposed many methods that were not exported.
 
-In the various supported languages the source code is made available,
-but it is not organised into rigid packages/crates/jars/whatever
-
-It is expected that the consumer will themselves take this final step,
-depending on the exact requirements of their project.
 
 Note that AMCL is largely configure at compile time, and so it doesn't
 fit the mold for a general purpose library that can be configured at

@@ -19,7 +19,7 @@ under the License.
 
 /* MiotCL Weierstrass elliptic curve functions over FP2 */
 
-package main
+package amcl
 
 //import "fmt"
 

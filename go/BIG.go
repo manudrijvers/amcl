@@ -19,7 +19,7 @@ under the License.
 
 /* MiotCL BIG number class */ 
 
-package main
+package amcl
 
 import "strconv"
 //import "fmt"

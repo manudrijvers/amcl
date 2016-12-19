@@ -21,7 +21,7 @@ under the License.
 
 /* FP2 elements are of the form a+ib, where i is sqrt(-1) */
 
-package main
+package amcl
 
 //import "fmt"
 

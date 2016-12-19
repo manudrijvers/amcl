@@ -20,7 +20,7 @@ under the License.
 /* Finite Field arithmetic */
 /* CLINT mod p functions */
 
-package main
+package amcl
 
 //import "fmt"
 

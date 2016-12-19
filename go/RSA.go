@@ -19,7 +19,7 @@ under the License.
 
 /* RSA API high-level functions  */
 
-package main
+package amcl
 
 //import "fmt"
 
@@ -57,7 +57,7 @@ func New_rsa_public_key(m int) *rsa_public_key{
 	return PK
 }
 
-func hashit(sha int,A []byte,n int) []byte {
+func hashitrsa(sha int,A []byte,n int) []byte {
 	var R []byte
 	if sha==RSA_SHA256 {
 		H:=NewHASH256()
@@ -148,7 +148,7 @@ func RSA_MGF1(sha int,Z []byte,olen int,K []byte) {
 	cthreshold:=olen/hlen 
 	if olen%hlen!=0 {cthreshold++}
 	for counter:=0;counter<cthreshold;counter++ {
-		B:=hashit(sha,Z,counter)
+		B:=hashitrsa(sha,Z,counter)
 
 		if (k+hlen>olen) {
 			for i:=0;i<olen%hlen;i++ {K[k]=B[i]; k++}
@@ -169,7 +169,7 @@ func PKCS15(sha int,m []byte,w []byte) bool {
 	idlen:=19
 
 	if olen<idlen+hlen+10 {return false}
-	H:=hashit(sha,m,-1)
+	H:=hashitrsa(sha,m,-1)
 
 	for i:=0;i<len(w);i++ {w[i]=0}
 	i:=0
@@ -208,7 +208,7 @@ func RSA_OAEP_ENCODE(sha int,m []byte,rng *RAND,p []byte) []byte {
 
 	DBMASK:=make([]byte,olen-seedlen)
 
-	h:=hashit(sha,p,-1);
+	h:=hashitrsa(sha,p,-1);
 
 	for i:=0;i<hlen;i++ {f[i]=h[i]}
 
@@ -263,7 +263,7 @@ func RSA_OAEP_DECODE(sha int,p []byte,f []byte) [] byte {
 		}
 	}
 
-	h:=hashit(sha,p,-1)
+	h:=hashitrsa(sha,p,-1)
 	for i:=0;i<hlen;i++ {CHASH[i]=h[i]}
 
 	x:=f[0]

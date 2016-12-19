@@ -29,7 +29,7 @@ under the License.
 /* Marsaglia & Zaman Random number generator constants */
 
 
-package main
+package amcl
 
 //import "fmt"
 
