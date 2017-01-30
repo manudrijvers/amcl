@@ -2,9 +2,8 @@ This is a fork of github.com/miracl/amcl that allows the go version
 of amcl to be used as a library. That is, we replaced package main
 with package amcl and exposed many methods that were not exported.
 
-
 Note that AMCL is largely configure at compile time, and so it doesn't
-fit the mold for a general purpose library that can be configured at
+fit the mould for a general purpose library that can be configured at
 runtime.
 
 AMCL is available in 32-bit and 64-bit versions in most languages.

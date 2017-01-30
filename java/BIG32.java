@@ -64,11 +64,6 @@ public class BIG {
 		w[i]=x;
 	} 
 
-	public void xortop(int x,int s)
-	{
-		w[ROM.NLEN-1]^=((int)x<<s);
-	}
-
 /* calculate Field Excess */
 	public static int EXCESS(BIG a)
 	{
@@ -150,7 +145,7 @@ public class BIG {
 	}
 
 /* normalise BIG - force all digits < 2^BASEBITS */
-	public int norm() {
+	public long norm() {
 		int d,carry=0;
 		for (int i=0;i<ROM.NLEN-1;i++)
 		{
@@ -159,7 +154,7 @@ public class BIG {
 			carry=d>>ROM.BASEBITS;
 		}
 		w[ROM.NLEN-1]=(w[ROM.NLEN-1]+carry);
-		return (int)(w[ROM.NLEN-1]>>((8*ROM.MODBYTES)%ROM.BASEBITS));  
+		return (long)(w[ROM.NLEN-1]>>((8*ROM.MODBYTES)%ROM.BASEBITS));  
 	}
 
 /* return number of bits */
@@ -206,24 +201,29 @@ public class BIG {
 		return s;
 	}
 
-/* set this[i]+=x*y+c, and return high part */
-	public int muladd(int x,int y,int c,int i)
+	public static int[] muladd(int x,int y,int c,int r)
 	{
-		long prod=(long)x*y+c+w[i];
-		w[i]=(int)prod&ROM.BMASK;
-		return (int)(prod>>ROM.BASEBITS);
+		int[] tb=new int[2];
+		long prod=(long)x*y+c+r;	
+		tb[1]=(int)prod&ROM.BMASK;
+		tb[0]=(int)(prod>>ROM.BASEBITS);
+		return tb;
 	}
 
 /* this*=x, where x is >NEXCESS */
 	public int pmul(int c)
 	{
 		int ak,carry=0;
+		int[] cr=new int[2];
+
 		norm();
 		for (int i=0;i<ROM.NLEN;i++)
 		{
 			ak=w[i];
 			w[i]=0;
-			carry=muladd(ak,c,carry,i);
+			cr=muladd(ak,c,carry,w[i]);
+			carry=cr[0];
+			w[i]=cr[1];
 		}
 		return carry;
 	}
@@ -232,9 +232,14 @@ public class BIG {
 	public DBIG pxmul(int c)
 	{
 		DBIG m=new DBIG(0);	
+		int[] cr=new int[2];	
 		int carry=0;
 		for (int j=0;j<ROM.NLEN;j++)
-			carry=m.muladd(w[j],c,carry,j);
+		{
+			cr=muladd(w[j],c,carry,m.w[j]);
+			carry=cr[0];
+			m.w[j]=cr[1];
+		}
 		m.w[ROM.NLEN]=carry;		
 		return m;
 	}
@@ -259,11 +264,19 @@ public class BIG {
 	{
 		int carry;
 		BIG c=new BIG(0);
+		int[] cr=new int[2];			
 		for (int i=0;i<ROM.NLEN;i++)
 		{
 			carry=0;
 			for (int j=0;j<ROM.NLEN;j++)
-				if (i+j<ROM.NLEN) carry=c.muladd(a.w[i],b.w[j],carry,i+j);
+			{
+				if (i+j<ROM.NLEN) 
+				{
+					cr=muladd(a.w[i],b.w[j],carry,c.w[i+j]);
+					carry=cr[0];
+					c.w[i+j]=cr[1];
+				}
+			}
 		}
 		return c;
 	}
@@ -343,12 +356,42 @@ public class BIG {
 		return c;
 	}
 
+	static BIG monty(DBIG d)
+	{
+		BIG b;
+		long t,c,s;
+		int i,k;
+		long[] dd=new long[ROM.NLEN];
+		int[] v=new int[ROM.NLEN];
+		BIG m=new BIG(ROM.Modulus);
+		b=new BIG(0);
+
+		t=d.w[0]; v[0]=((int)t*ROM.MConst)&ROM.BMASK; t+=(long)v[0]*m.w[0]; c=(t>>ROM.BASEBITS)+d.w[1]; s=0;
+
+		for (k=1;k<ROM.NLEN;k++)
+		{
+			t=c+s+(long)v[0]*m.w[k];
+			for (i=k-1;i>k/2;i--) t+=(long)(v[k-i]-v[i])*(m.w[i]-m.w[k-i]);
+			v[k]=((int)t*ROM.MConst)&ROM.BMASK; t+=(long)v[k]*m.w[0]; c=(t>>ROM.BASEBITS)+d.w[k+1];
+			dd[k]=(long)v[k]*m.w[k]; s+=dd[k];
+		}
+		for (k=ROM.NLEN;k<2*ROM.NLEN-1;k++)
+		{
+			t=c+s;
+			for (i=ROM.NLEN-1;i>=1+k/2;i--) t+=(long)(v[k-i]-v[i])*(m.w[i]-m.w[k-i]);
+			b.w[k-ROM.NLEN]=(int)t&ROM.BMASK; c=(t>>ROM.BASEBITS)+d.w[k+1]; s-=dd[k-ROM.NLEN+1];
+		}
+		b.w[ROM.NLEN-1]=(int)c&ROM.BMASK;	
+		b.norm();
+		return b;		
+	}
+
 /* reduce a DBIG to a BIG using the appropriate form of the modulus */
 	public static BIG mod(DBIG d)
 	{
-		BIG b;
 		if (ROM.MODTYPE==ROM.PSEUDO_MERSENNE)
 		{
+			BIG b;
 			int v,tw;
 			BIG t=d.split(ROM.MODBITS);
 			b=new BIG(d);
@@ -360,20 +403,28 @@ public class BIG {
 
 			b.add(t);
 			b.norm();
+			return b;
 		}
 		if (ROM.MODTYPE==ROM.MONTGOMERY_FRIENDLY)
 		{
+			BIG b;
+			int[] cr=new int[2];				
 			for (int i=0;i<ROM.NLEN;i++)
-				d.w[ROM.NLEN+i]+=d.muladd(d.w[i],ROM.MConst-1,d.w[i],ROM.NLEN+i-1);
+			{
+				cr=muladd(d.w[i],ROM.MConst-1,d.w[i],d.w[ROM.NLEN+i-1]);
+				d.w[ROM.NLEN+i]+=cr[0];
+				d.w[ROM.NLEN+i-1]=cr[1];	
+			}
 			
 			b=new BIG(0);
-
 			for (int i=0;i<ROM.NLEN;i++ )
 				b.w[i]=d.w[ROM.NLEN+i];
 			b.norm();
+			return b;
 		}
 		if (ROM.MODTYPE==ROM.GENERALISED_MERSENNE)
 		{ // GoldiLocks Only
+			BIG b;
 			BIG t=d.split(ROM.MODBITS);
 			b=new BIG(d);
 			b.add(t);
@@ -394,43 +445,23 @@ public class BIG {
 			
 			b.w[224/ROM.BASEBITS]+=carry<<(224%ROM.BASEBITS);
 			b.norm();
+			return b;
 		}
 		if (ROM.MODTYPE==ROM.NOT_SPECIAL)
 		{
-
-			long t,c,s;
-			int i,k;
-			long[] dd=new long[ROM.NLEN];
-			int[] v=new int[ROM.NLEN];
-			BIG m=new BIG(ROM.Modulus);
-			b=new BIG(0);
-
-			t=d.w[0]; v[0]=((int)t*ROM.MConst)&ROM.BMASK; t+=(long)v[0]*m.w[0]; c=(t>>ROM.BASEBITS)+d.w[1]; s=0;
-
-			for (k=1;k<ROM.NLEN;k++)
-			{
-				t=c+s+(long)v[0]*m.w[k];
-				for (i=k-1;i>k/2;i--) t+=(long)(v[k-i]-v[i])*(m.w[i]-m.w[k-i]);
-				v[k]=((int)t*ROM.MConst)&ROM.BMASK; t+=(long)v[k]*m.w[0]; c=(t>>ROM.BASEBITS)+d.w[k+1];
-				dd[k]=(long)v[k]*m.w[k]; s+=dd[k];
-			}
-			for (k=ROM.NLEN;k<2*ROM.NLEN-1;k++)
-			{
-				t=c+s;
-				for (i=ROM.NLEN-1;i>=1+k/2;i--) t+=(long)(v[k-i]-v[i])*(m.w[i]-m.w[k-i]);
-				b.w[k-ROM.NLEN]=(int)t&ROM.BMASK; c=(t>>ROM.BASEBITS)+d.w[k+1]; s-=dd[k-ROM.NLEN+1];
-			}
-			b.w[ROM.NLEN-1]=(int)c&ROM.BMASK;	
-			b.norm();
+			return monty(d);
 		}
 
-		return b;
+		return new BIG(0);
 	}
 
 
 
 /****************************************************************************/
-
+	public void xortop(long x)
+	{
+		w[ROM.NLEN-1]^=x;
+	}
 
 /* set x = x mod 2^m */
 	public void mod2m(int m)
@@ -554,6 +585,12 @@ public class BIG {
 		norm();
 		w[0]+=x;
 	}
+
+/* this+=x, where x is long */
+	public void incl(long x) {
+		norm();
+		w[0]+=x;
+	}	
 
 /* return this.x */
 	public BIG minus(BIG x) {

@@ -28,6 +28,17 @@ In the rom32.swift/rom64.swift file you must provide the curve constants.
 
 Several examples are provided there, if you are willing to use one of these.
 
+To help generate the ROM constants for your own curve some MIRACL helper 
+programs are included. The programs bngen.cpp and blsgen.cpp generate ROM 
+data for a BN and BLS pairing friendly curves, and the program ecgen.cpp 
+generates ROM data for regular EC curves.
+
+The MIRACL based program check.cpp helps choose the best number base for
+big number representation, given the word-length and the size of the modulus.
+
+The program bigtobig.cpp converts a big number to the AMCL 
+BIG format.
+
 For a quick jumpstart:-
 
 
@@ -99,5 +110,26 @@ swift -lamcl -I. TestRSA.swift
 
 Note that classes and methods that need to be exposed to consuming programs, 
 should be made "public" when and if needed. Here we have done this as needed 
-just for these example programs
+just for these example programs.
+
+------------------------------------------------
+
+An alternative method to build applications is to use the swiftc compiler 
+directly. For example:-
+
+Edit main.swift to just include a call to BenchtestPAIR()
+
+Copy rom32.swift to rom.swift
+
+Compile directly using swiftc
+
+swiftc -DD32 -O -Ounchecked -whole-module-optimization main.swift BenchtestPAIR.swift pair.swift fp12.swift fp4.swift fp2.swift fp.swift big.swift dbig.swift ecp.swift ecp2.swift hash256.swift hash384.swift hash512.swift aes.swift rand.swift rom.swift -o main 
+
+Run the BenchtestPAIR() program by
+
+./main
+
+For the files needed to build other applications, see go/readme.txt
+
+Change "32" to "64" for a 64-bit build
 

@@ -93,6 +93,9 @@ int main()
 #if CHOICE==BLS455 
 	printf("BLS455 Curve\n");	
 #endif
+#if CHOICE==BLS383 
+	printf("BLS383 Curve\n");	
+#endif
 
 #if CURVETYPE==WEIERSTRASS
 	printf("Weierstrass parameterization\n");
@@ -159,7 +162,7 @@ int main()
 	iterations=0;
     start=clock();
     do {
-		RSA_KEY_PAIR(&RNG,65537,&priv,&pub);
+      RSA_KEY_PAIR(&RNG,65537,&priv,&pub,NULL,NULL);
 		iterations++;
 		elapsed=(clock()-start)/(double)CLOCKS_PER_SEC;
     } while (elapsed<MIN_TIME || iterations<MIN_ITERS);
