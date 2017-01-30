@@ -65,3 +65,7 @@ func Modsub(a, b, m *BIG) *BIG {
 	return Modadd(a, Modneg(b, m), m)
 }
 
+func (r *BIG) Powmod(e *BIG,m *BIG) *BIG {
+	return r.powmod(e, m)
+}
+
