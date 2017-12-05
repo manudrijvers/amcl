@@ -73,7 +73,7 @@ func NewFP2big(c *BIG) *FP2 {
 	return F
 }
 
-/* reduce components mod Modulus */
+/* reduce components Mod Modulus */
 func (F *FP2) reduce() {
 	F.a.reduce()
 	F.b.reduce()
@@ -108,12 +108,12 @@ func (F *FP2) equals(x *FP2) bool {
 }
 
 /* extract a */
-func (F *FP2) getA() *BIG { 
+func (F *FP2) GetA() *BIG {
 	return F.a.redc()
 }
 
 /* extract b */
-func (F *FP2) getB() *BIG {
+func (F *FP2) GetB() *BIG {
 	return F.b.redc()
 }
 
@@ -135,7 +135,7 @@ func (F *FP2) one() {
 	F.b.zero()
 }
 
-/* negate this mod Modulus */
+/* negate this Mod Modulus */
 func (F *FP2) neg() {
 //	F.norm()
 	m:=NewFPcopy(F.a)
@@ -192,7 +192,7 @@ func (F *FP2) sqr() {
 	w3:=NewFPcopy(F.a)
 	mb:=NewFPcopy(F.b)
 
-//	w3.mul(F.b)
+//	w3.Mul(F.b)
 	w1.add(F.b)
 
 w3.add(F.a);
@@ -206,7 +206,7 @@ F.b.mul(w3);
 	F.a.norm()
 
 	F.a.mul(w1)
-//	F.b.copy(w3); F.b.add(w3)
+//	F.b.copy(w3); F.b.Add(w3)
 
 //	F.b.norm()
 }
@@ -230,8 +230,8 @@ func (F *FP2) mul(y *FP2) {
 	A:=mul(F.a.x,y.a.x)
 	B:=mul(F.b.x,y.b.x)
 
-	C.add(F.b.x); C.norm()
-	D.add(y.b.x); D.norm()
+	C.Add(F.b.x); C.norm()
+	D.Add(y.b.x); D.norm()
 
 	E:=mul(C,D)
 	FF:=NewDBIGcopy(A); FF.add(B)
@@ -302,7 +302,7 @@ func (F *FP2) times_i() {
 }
 
 /* w*=(1+sqrt(-1)) */
-/* where X*2-(1+sqrt(-1)) is irreducible for FP4, assumes p=3 mod 8 */
+/* where X*2-(1+sqrt(-1)) is irreducible for FP4, assumes p=3 Mod 8 */
 func (F *FP2) mul_ip() {
 //	F.norm()
 	t:=NewFP2copy(F)

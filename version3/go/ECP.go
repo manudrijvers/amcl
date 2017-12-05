@@ -63,13 +63,13 @@ func NewECPbigs(ix *BIG,iy *BIG) *ECP {
 	if CURVETYPE==MONTGOMERY {
 		if rhs.jacobi()==1 {
 			E.INF=false
-		} else {E.inf()}
+		} else {E.Inf()}
 	} else {
 		y2:=NewFPcopy(E.y)
 		y2.sqr()
 		if y2.equals(rhs) {
 			E.INF=false
-		} else {E.inf()}
+		} else {E.Inf()}
 	}
 	return E
 }
@@ -86,7 +86,7 @@ func NewECPbigint(ix *BIG,s int) *ECP {
 		if ny.redc().parity()!=s {ny.neg()}
 		E.y.copy(ny)
 		E.INF=false
-	} else {E.inf()}
+	} else {E.Inf()}
 	return E;
 }
 
@@ -163,7 +163,7 @@ func (E *ECP) Copy(P *ECP) {
 }
 
 /* this=-this */
-func (E *ECP) neg() {
+func (E *ECP) Neg() {
 //	if E.Is_infinity() {return}
 	if CURVETYPE==WEIERSTRASS {
 		E.y.neg(); E.y.norm()
@@ -192,12 +192,12 @@ func (E *ECP) selector(W []*ECP,b int32) {
 	E.cmove(W[7],teq(babs,7))
  
 	MP.Copy(E);
-	MP.neg()
+	MP.Neg()
 	E.cmove(MP,int(m&1));
 }
 
 /* set this=O */
-func (E *ECP) inf() {
+func (E *ECP) Inf() {
 	E.INF=true;
 	E.x.zero()
 	if CURVETYPE!=MONTGOMERY {E.y.one()}
@@ -207,7 +207,7 @@ func (E *ECP) inf() {
 }
 
 /* Test P == Q */
-func( E *ECP) equals(Q *ECP) bool {
+func( E *ECP) Equals(Q *ECP) bool {
 	if E.Is_infinity() && Q.Is_infinity() {return true}
 	if E.Is_infinity() || Q.Is_infinity() {return false}
 
@@ -280,37 +280,37 @@ func (E *ECP) Affine() {
 }
 
 /* extract x as a BIG */
-func (E *ECP) getX() *BIG {
+func (E *ECP) GetX() *BIG {
 	E.Affine()
 	return E.x.redc()
 }
 /* extract y as a BIG */
-func (E *ECP) getY() *BIG {
+func (E *ECP) GetY() *BIG {
 	E.Affine()
 	return E.y.redc()
 }
 
 /* get sign of Y */
-func (E *ECP) getS() int {
+func (E *ECP) GetS() int {
 	E.Affine()
-	y:=E.getY()
+	y:=E.GetY()
 	return y.parity()
 }
 /* extract x as an FP */
-func (E *ECP) getx() *FP {
+func (E *ECP) Getx() *FP {
 	return E.x;
 }
 /* extract y as an FP */
-func (E *ECP) gety() *FP {
+func (E *ECP) Gety() *FP {
 	return E.y
 }
 /* extract z as an FP */
-func (E *ECP) getz() *FP {
+func (E *ECP) Getz() *FP {
 	return E.z
 }
 
 /* convert to byte array */
-func (E *ECP) toBytes(b []byte) {
+func (E *ECP) ToBytes(b []byte) {
 	var t [int(MODBYTES)]byte
 	MB:=int(MODBYTES)
 	if CURVETYPE!=MONTGOMERY {
@@ -318,10 +318,10 @@ func (E *ECP) toBytes(b []byte) {
 	} else {b[0]=0x02}
 	
 	E.Affine()
-	E.x.redc().toBytes(t[:])
+	E.x.redc().ToBytes(t[:])
 	for i:=0;i<MB;i++ {b[i+1]=t[i]}
 	if CURVETYPE!=MONTGOMERY {
-		E.y.redc().toBytes(t[:])
+		E.y.redc().ToBytes(t[:])
 		for i:=0;i<MB;i++ {b[i+MB+1]=t[i]}
 	}
 }
@@ -333,24 +333,24 @@ func ECP_fromBytes(b []byte) *ECP {
 	p:=NewBIGints(Modulus)
 
 	for i:=0;i<MB;i++ {t[i]=b[i+1]}
-	px:=fromBytes(t[:])
+	px:= FromBytes(t[:])
 	if comp(px,p)>=0 {return NewECP()}
 
 	if (b[0]==0x04) {
 		for i:=0;i<MB;i++ {t[i]=b[i+MB+1]}
-		py:=fromBytes(t[:])
+		py:= FromBytes(t[:])
 		if comp(py,p)>=0 {return NewECP()}
 		return NewECPbigs(px,py)
 	} else {return NewECPbig(px)}
 }
 
 /* convert to hex string */
-func (E *ECP) toString() string {
+func (E *ECP) ToString() string {
 	if E.Is_infinity() {return "infinity"}
 	E.Affine();
 	if CURVETYPE==MONTGOMERY {
-		return "("+E.x.redc().toString()+")"
-	} else {return "("+E.x.redc().toString()+","+E.y.redc().toString()+")"}
+		return "("+E.x.redc().ToString()+")"
+	} else {return "("+E.x.redc().ToString()+","+E.y.redc().ToString()+")"}
 }
 
 /* this*=2 */
@@ -502,7 +502,7 @@ func (E *ECP) dbl() {
 }
 
 /* this+=Q */
-func (E *ECP) add(Q *ECP) {
+func (E *ECP) Add(Q *ECP) {
 
 	if E.INF {
 		E.Copy(Q)
@@ -716,22 +716,22 @@ func (E *ECP) dadd(Q *ECP,W *ECP) {
 	E.z.copy(W.x); E.z.mul(B)
 
 //	if E.z.iszilch() {
-//		E.inf()
+//		E.Inf()
 //	} else {E.INF=false;}
 
 }
 
 /* this-=Q */
-func (E *ECP) sub(Q *ECP) {
-	Q.neg()
-	E.add(Q)
-	Q.neg()
+func (E *ECP) Sub(Q *ECP) {
+	Q.Neg()
+	E.Add(Q)
+	Q.Neg()
 }
 
 /* constant time multiply by small integer of length bts - use ladder */
 func (E *ECP) pinmul(e int32,bts int32) *ECP {	
 	if CURVETYPE==MONTGOMERY {
-		return E.mul(NewBIGint(int(e)))
+		return E.Mul(NewBIGint(int(e)))
 	} else {
 		P:=NewECP()
 		R0:=NewECP()
@@ -740,7 +740,7 @@ func (E *ECP) pinmul(e int32,bts int32) *ECP {
 		for i:=bts-1;i>=0;i-- {
 			b:=int((e>>uint32(i))&1)
 			P.Copy(R1)
-			P.add(R0)
+			P.Add(R0)
 			R0.cswap(R1,b)
 			R1.Copy(P)
 			R0.dbl()
@@ -754,7 +754,7 @@ func (E *ECP) pinmul(e int32,bts int32) *ECP {
 
 /* return e.this */
 
-func (E *ECP) mul(e *BIG) *ECP {
+func (E *ECP) Mul(e *BIG) *ECP {
 	if (e.iszilch() || E.Is_infinity()) {return NewECP()}
 	P:=NewECP()
 	if CURVETYPE==MONTGOMERY {
@@ -796,13 +796,13 @@ func (E *ECP) mul(e *BIG) *ECP {
 		for i:=1;i<8;i++ {
 			W=append(W,NewECP())
 			W[i].Copy(W[i-1])
-			W[i].add(Q)
+			W[i].Add(Q)
 		}
 
-// make exponent odd - add 2P if even, P if odd 
+// make exponent odd - Add 2P if even, P if odd 
 		t.copy(e)
 		s:=int(t.parity())
-		t.inc(1); t.norm(); ns:=int(t.parity()); mt.copy(t); mt.inc(1); mt.norm()
+		t.Inc(1); t.norm(); ns:=int(t.parity()); mt.copy(t); mt.Inc(1); mt.norm()
 		t.cmove(mt,s)
 		Q.cmove(E,ns)
 		C.Copy(Q)
@@ -812,7 +812,7 @@ func (E *ECP) mul(e *BIG) *ECP {
 // convert exponent to signed 4-bit window 
 		for i:=0;i<nb;i++ {
 			w[i]=int8(t.lastbits(5)-16)
-			t.dec(int(w[i])); t.norm()
+			t.Dec(int(w[i])); t.norm()
 			t.fshr(4)	
 		}
 		w[nb]=int8(t.lastbits(5))
@@ -824,22 +824,17 @@ func (E *ECP) mul(e *BIG) *ECP {
 			P.dbl()
 			P.dbl()
 			P.dbl()
-			P.add(Q)
+			P.Add(Q)
 		}
-		P.sub(C) /* apply correction */
+		P.Sub(C) /* apply correction */
 	}
 	P.Affine()
 	return P
 }
 
-/* Public version */
-func (E *ECP) Mul(e *BIG) *ECP {
-	return E.mul(e)
-}
-
 /* Return e.this+f.Q */
 
-func (E *ECP) mul2(e *BIG,Q *ECP,f *BIG) *ECP {
+func (E *ECP) Mul2(e *BIG,Q *ECP,f *BIG) *ECP {
 	te:=NewBIG()
 	tf:=NewBIG()
 	mt:=NewBIG()
@@ -860,41 +855,41 @@ func (E *ECP) mul2(e *BIG,Q *ECP,f *BIG) *ECP {
 	for i:=0;i<8;i++ {
 		W=append(W,NewECP())
 	}
-	W[1].Copy(E); W[1].sub(Q)
-	W[2].Copy(E); W[2].add(Q);
+	W[1].Copy(E); W[1].Sub(Q)
+	W[2].Copy(E); W[2].Add(Q);
 	S.Copy(Q); S.dbl();
-	W[0].Copy(W[1]); W[0].sub(S);
-	W[3].Copy(W[2]); W[3].add(S);
+	W[0].Copy(W[1]); W[0].Sub(S);
+	W[3].Copy(W[2]); W[3].Add(S);
 	T.Copy(E); T.dbl();
-	W[5].Copy(W[1]); W[5].add(T);
-	W[6].Copy(W[2]); W[6].add(T);
-	W[4].Copy(W[5]); W[4].sub(S);
-	W[7].Copy(W[6]); W[7].add(S);
+	W[5].Copy(W[1]); W[5].Add(T);
+	W[6].Copy(W[2]); W[6].Add(T);
+	W[4].Copy(W[5]); W[4].Sub(S);
+	W[7].Copy(W[6]); W[7].Add(S);
 
-// if multiplier is odd, add 2, else add 1 to multiplier, and add 2P or P to correction 
+// if multiplier is odd, Add 2, else Add 1 to multiplier, and Add 2P or P to correction 
 
 	s:=int(te.parity());
-	te.inc(1); te.norm(); ns:=int(te.parity()); mt.copy(te); mt.inc(1); mt.norm()
+	te.Inc(1); te.norm(); ns:=int(te.parity()); mt.copy(te); mt.Inc(1); mt.norm()
 	te.cmove(mt,s)
 	T.cmove(E,ns)
 	C.Copy(T)
 
 	s=int(tf.parity())
-	tf.inc(1); tf.norm(); ns=int(tf.parity()); mt.copy(tf); mt.inc(1); mt.norm()
+	tf.Inc(1); tf.norm(); ns=int(tf.parity()); mt.copy(tf); mt.Inc(1); mt.norm()
 	tf.cmove(mt,s)
 	S.cmove(Q,ns)
-	C.add(S)
+	C.Add(S)
 
-	mt.copy(te); mt.add(tf); mt.norm()
+	mt.copy(te); mt.Add(tf); mt.norm()
 	nb:=1+(mt.nbits()+1)/2
 
 // convert exponent to signed 2-bit window 
 	for i:=0;i<nb;i++ {
 		a:=(te.lastbits(3)-4)
-		te.dec(int(a)); te.norm()
+		te.Dec(int(a)); te.norm()
 		te.fshr(2)
 		b:=(tf.lastbits(3)-4)
-		tf.dec(int(b)); tf.norm()
+		tf.Dec(int(b)); tf.norm()
 		tf.fshr(2)
 		w[i]=int8(4*a+b)
 	}
@@ -905,26 +900,26 @@ func (E *ECP) mul2(e *BIG,Q *ECP,f *BIG) *ECP {
 		T.selector(W,int32(w[i]));
 		S.dbl()
 		S.dbl()
-		S.add(T)
+		S.Add(T)
 	}
-	S.sub(C) /* apply correction */
+	S.Sub(C) /* apply correction */
 	S.Affine()
 	return S
 }
 
 func ECP_mapit(h []byte) *ECP {
 	q:=NewBIGints(Modulus)
-	x:=fromBytes(h[:])
-	x.mod(q)
+	x:= FromBytes(h[:])
+	x.Mod(q)
 	var P *ECP
 	for true {
 		P=NewECPbigint(x,0)
 		if !P.Is_infinity() {break}
-		x.inc(1); x.norm()
+		x.Inc(1); x.norm()
 	}
 	if CURVE_PAIRING_TYPE!=BN {
 		c:=NewBIGints(CURVE_Cof)
-		P=P.mul(c)
+		P=P.Mul(c)
 	}	
 	return P
 }
@@ -938,13 +933,13 @@ func main() {
 	if CURVETYPE!=MONTGOMERY {Gy=NewBIGints(CURVE_Gy)}
 	r:=NewBIGints(CURVE_Order)
 
-	//r.dec(7);
+	//r.Dec(7);
 	
-	fmt.Printf("Gx= "+Gx.toString())
+	fmt.Printf("Gx= "+Gx.ToString())
 	fmt.Printf("\n")
 
 	if CURVETYPE!=MONTGOMERY {
-		fmt.Printf("Gy= "+Gy.toString())
+		fmt.Printf("Gy= "+Gy.ToString())
 		fmt.Printf("\n")
 	}	
 
@@ -952,14 +947,14 @@ func main() {
 		P=NewECPbigs(Gx,Gy)
 	} else  {P=NewECPbig(Gx)}
 
-	fmt.Printf("P= "+P.toString());		
+	fmt.Printf("P= "+P.ToString());		
 	fmt.Printf("\n")
 
-	R:=P.mul(r);
+	R:=P.Mul(r);
 		//for (int i=0;i<10000;i++)
-		//	R=P.mul(r);
+		//	R=P.Mul(r);
 	
-	fmt.Printf("R= "+R.toString())
+	fmt.Printf("R= "+R.ToString())
 	fmt.Printf("\n")
 }
 */

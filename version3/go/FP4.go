@@ -59,13 +59,13 @@ func NewFP4fp2(c *FP2) *FP4 {
 	return F
 }
 
-/* reduce all components of this mod Modulus */
+/* reduce all components of this Mod Modulus */
 func (F *FP4) reduce() {
 	F.a.reduce()
 	F.b.reduce()
 }
 
-/* normalise all components of this mod Modulus */
+/* normalise all components of this Mod Modulus */
 func (F *FP4) norm() {
 	F.a.norm()
 	F.b.norm()
@@ -334,7 +334,7 @@ func (F *FP4) xtr_pow(n *BIG) *FP4 {
 	n.norm()
 	par:=n.parity()
 	v:=NewBIGcopy(n); v.fshr(1)
-	if (par==0) {v.dec(1); v.norm()}
+	if (par==0) {v.Dec(1); v.norm()}
 
 	nb:=v.nbits();
 	for i:=nb-1;i>=0;i-- {
@@ -409,7 +409,7 @@ func (F *FP4) xtr_pow2(ck *FP4,ckml *FP4,ckm2l *FP4,a *BIG,b *BIG) *FP4 {
 					cu.xtr_D()
 				} else {
 					if (e.parity()==1) {
-						d.sub(e); d.norm()
+						d.Sub(e); d.norm()
 						d.fshr(1)
 						t.copy(cv)
 						t.xtr_A(cu,cumv,cum2v)
@@ -437,7 +437,7 @@ func (F *FP4) xtr_pow2(ck *FP4,ckml *FP4,ckm2l *FP4,a *BIG,b *BIG) *FP4 {
 		if comp(d,e)<0 {
 			w.copy(d); w.imul(4); w.norm()
 			if comp(e,w)<=0 {
-				e.sub(d); e.norm()
+				e.Sub(d); e.norm()
 				t.copy(cv)
 				t.xtr_A(cu,cumv,cum2v)
 				cum2v.copy(cumv)
@@ -460,7 +460,7 @@ func (F *FP4) xtr_pow2(ck *FP4,ckml *FP4,ckm2l *FP4,a *BIG,b *BIG) *FP4 {
 					if (d.parity()==1) {
 						w.copy(e)
 						e.copy(d)
-						w.sub(d); w.norm()
+						w.Sub(d); w.norm()
 						d.copy(w); d.fshr(1)
 						t.copy(cv)
 						t.xtr_A(cu,cumv,cum2v)

@@ -355,7 +355,7 @@ func (r *BIG) nbits() int {
 }
 
 /* Convert to Hex String */
-func (r *BIG) toString() string {
+func (r *BIG) ToString() string {
 	s:=""
 	len:=r.nbits()
 
@@ -378,14 +378,14 @@ func (r *BIG) toString() string {
 	return s
 }
 
-func (r *BIG) add(x *BIG) {
+func (r *BIG) Add(x *BIG) {
 	for i:=0;i<NLEN;i++ {
 		r.w[i]=r.w[i]+x.w[i] 
 	}
 }
 
 /* return this+x */
-func (r *BIG) plus(x *BIG) *BIG {
+func (r *BIG) Plus(x *BIG) *BIG {
 	s:=new(BIG)
 	for i:=0;i<NLEN;i++ {
 		s.w[i]=r.w[i]+x.w[i];
@@ -394,7 +394,7 @@ func (r *BIG) plus(x *BIG) *BIG {
 }
 
 /* this+=x, where x is int */
-func (r *BIG) inc(x int) {
+func (r *BIG) Inc(x int) {
 	r.norm();
 	r.w[0]+=Chunk(x);
 }
@@ -411,7 +411,7 @@ func (r *BIG) pxmul(c int) *DBIG {
 }
 
 /* return this-x */
-func (r *BIG) minus(x *BIG) *BIG {
+func (r *BIG) Minus(x *BIG) *BIG {
 	d:=new(BIG)
 	for i:=0;i<NLEN;i++ {
 		d.w[i]=r.w[i]-x.w[i] 
@@ -420,7 +420,7 @@ func (r *BIG) minus(x *BIG) *BIG {
 }
 
 /* this-=x */
-func (r *BIG) sub(x *BIG) {
+func (r *BIG) Sub(x *BIG) {
 	for i:=0;i<NLEN;i++ {
 		r.w[i]=r.w[i]-x.w[i] 
 	}
@@ -434,7 +434,7 @@ func (r *BIG) rsub(x *BIG) {
 } 
 
 /* this-=x, where x is int */
-func (r *BIG) dec(x int) {
+func (r *BIG) Dec(x int) {
 	r.norm();
 	r.w[0]-=Chunk(x)
 } 
@@ -478,11 +478,11 @@ func frombytearray(b []byte,n int) *BIG {
 	return m
 }
 
-func (r *BIG) toBytes(b []byte) {
+func (r *BIG) ToBytes(b []byte) {
 	r.tobytearray(b,0)
 }
 
-func fromBytes(b []byte) *BIG {
+func FromBytes(b []byte) *BIG {
 	return frombytearray(b,0)
 }
 
@@ -545,7 +545,7 @@ func (r *BIG) lastbits(n int) int {
 }
 
 
-/* set x = x mod 2^m */
+/* set x = x Mod 2^m */
 func (r *BIG) mod2m(m uint) {
 	wd:=int(m/BASEBITS)
 	bt:=m%BASEBITS
@@ -556,13 +556,13 @@ func (r *BIG) mod2m(m uint) {
 
 
 
-/* a=1/a mod 2^256. This is very fast! */
+/* a=1/a Mod 2^256. This is very fast! */
 func (r *BIG) invmod2m() {
 	U:=NewBIG()
 	b:=NewBIG()
 	c:=NewBIG()
 
-	U.inc(invmod256(r.lastbits(8)))
+	U.Inc(invmod256(r.lastbits(8)))
 
 	for i:=8;i<BIGBITS;i<<=1 {
 		U.norm()
@@ -572,22 +572,22 @@ func (r *BIG) invmod2m() {
 		c.copy(r); c.shr(ui); c.mod2m(ui)
 
 		t2:=smul(U,c); t2.mod2m(ui)
-		t1.add(t2)
+		t1.Add(t2)
 		t1.norm()
 		b=smul(t1,U); t1.copy(b)
 		t1.mod2m(ui)
 
 		t2.one(); t2.shl(ui); t1.rsub(t2); t1.norm()
 		t1.shl(ui)
-		U.add(t1)
+		U.Add(t1)
 	}
 	U.mod2m(8*MODBYTES)
 	r.copy(U)
 	r.norm()
 }
 
-/* reduce this mod m */
-func (r *BIG) mod(m *BIG) {
+/* reduce this Mod m */
+func (r *BIG) Mod(m *BIG) {
 	sr:=NewBIG()
 	r.norm()
 	if comp(r,m)<0 {return}
@@ -603,12 +603,12 @@ func (r *BIG) mod(m *BIG) {
 		m.fshr(1);
 
 			sr.copy(r)
-			sr.sub(m)
+			sr.Sub(m)
 			sr.norm()
 			r.cmove(sr,int(1-((sr.w[NLEN-1]>>uint(CHUNK-1))&1)));
 /*
 		if comp(r,m)>=0 {
-			r.sub(m)
+			r.Sub(m)
 			r.norm()
 		} */
 		k--;
@@ -636,19 +636,19 @@ func (r *BIG) div(m *BIG) {
 		e.fshr(1)
 
 		sr.copy(b);
-		sr.sub(m);
+		sr.Sub(m);
 		sr.norm();
 		d=int(1-((sr.w[NLEN-1]>>uint(CHUNK-1))&1));
 		b.cmove(sr,d);
 		sr.copy(r);
-		sr.add(e);
+		sr.Add(e);
 		sr.norm();
 		r.cmove(sr,d);
 /*
 		if comp(b,m)>=0 {
-			r.add(e)
+			r.Add(e)
 			r.norm()
-			b.sub(m)
+			b.Sub(m)
 			b.norm()
 		} */
 		k--
@@ -667,7 +667,7 @@ func random(rng *amcl.RAND) *BIG {
 		} else {r>>=1}
 
 		b:=Chunk(int(r&1))
-		m.shl(1); m.w[0]+=b// m.inc(b)
+		m.shl(1); m.w[0]+=b// m.Inc(b)
 		j++; j&=7; 
 	}
 	return m;
@@ -684,7 +684,7 @@ func Randomnum(q *BIG,rng *amcl.RAND) *BIG {
 		} else {r>>=1}
 
 		b:=Chunk(int(r&1))
-		d.shl(1); d.w[0]+=b// m.inc(b);
+		d.shl(1); d.w[0]+=b// m.Inc(b);
 		j++; j&=7 
 	}
 	m:=d.mod(q)
@@ -732,25 +732,25 @@ func nafbits(x *BIG,x3 *BIG ,i int) [3]int {
 }
 */
 
-/* return a*b mod m */
-func modmul(a,b,m *BIG) *BIG {
-	a.mod(m)
-	b.mod(m)
+/* return a*b Mod m */
+func Modmul(a,b,m *BIG) *BIG {
+	a.Mod(m)
+	b.Mod(m)
 	d:=mul(a,b);
 	return d.mod(m)
 }
 
-/* return a^2 mod m */
+/* return a^2 Mod m */
 func modsqr(a,m *BIG) *BIG {
-	a.mod(m)
+	a.Mod(m)
 	d:=sqr(a)
 	return d.mod(m)
 }
 
-/* return -a mod m */
-func modneg(a,m *BIG) *BIG {
-	a.mod(m)
-	return m.minus(a)
+/* return -a Mod m */
+func Modneg(a,m *BIG) *BIG {
+	a.Mod(m)
+	return m.Minus(a)
 }
 
 /* Jacobi Symbol (this/p). Returns 0, 1 or -1 */
@@ -765,7 +765,7 @@ func (r *BIG) jacobi(p *BIG) int {
 	r.norm()
 	x.copy(r)
 	n.copy(p)
-	x.mod(p)
+	x.Mod(p)
 
 	for comp(n,one)>0 {
 		if comp(x,zilch)==0 {return 0}
@@ -778,7 +778,7 @@ func (r *BIG) jacobi(p *BIG) int {
 		if k%2==1 {m+=(n8*n8-1)/8}
 		m+=(n8-1)*(x.lastbits(2)-1)/4
 		t.copy(n)
-		t.mod(x)
+		t.Mod(x)
 		n.copy(x)
 		x.copy(t)
 		m%=2
@@ -788,9 +788,9 @@ func (r *BIG) jacobi(p *BIG) int {
 	return -1
 }
 
-/* this=1/this mod p. Binary method */
-func (r *BIG) invmodp(p *BIG) {
-	r.mod(p)
+/* this=1/this Mod p. Binary method */
+func (r *BIG) Invmodp(p *BIG) {
+	r.Mod(p)
 	u:=NewBIGcopy(r)
 
 	v:=NewBIGcopy(p)
@@ -802,7 +802,7 @@ func (r *BIG) invmodp(p *BIG) {
 		for u.parity()==0 {
 			u.shr(1);
 			if x1.parity()!=0 {
-				x1.add(p)
+				x1.Add(p)
 				x1.norm()
 			}
 			x1.shr(1)
@@ -810,31 +810,31 @@ func (r *BIG) invmodp(p *BIG) {
 		for v.parity()==0 {
 			v.shr(1);
 			if x2.parity()!=0 {
-				x2.add(p)
+				x2.Add(p)
 				x2.norm()
 			}
 			x2.shr(1)
 		}
 		if comp(u,v)>=0 {
-			u.sub(v)
+			u.Sub(v)
 			u.norm()
 			if comp(x1,x2)>=0 {
-				x1.sub(x2)
+				x1.Sub(x2)
 			} else {
 				t.copy(p)
-				t.sub(x2)
-				x1.add(t)
+				t.Sub(x2)
+				x1.Add(t)
 			}
 			x1.norm()
 		} else {
-			v.sub(u)
+			v.Sub(u)
 			v.norm()
 			if comp(x2,x1)>=0 { 
-				x2.sub(x1)
+				x2.Sub(x1)
 			} else {
 				t.copy(p)
-				t.sub(x1)
-				x2.add(t)
+				t.Sub(x1)
+				x2.Add(t)
 			}
 			x2.norm()
 		}
@@ -844,7 +844,7 @@ func (r *BIG) invmodp(p *BIG) {
 	} else {r.copy(x2)}
 }
 
-/* return this^e mod m */
+/* return this^e Mod m */
 func (r *BIG) powmod(e *BIG,m *BIG) *BIG {
 	r.norm()
 	e.norm()
@@ -854,14 +854,14 @@ func (r *BIG) powmod(e *BIG,m *BIG) *BIG {
 	for true {
 		bt:=z.parity()
 		z.fshr(1)
-		if bt==1 {a=modmul(a,s,m)}
+		if bt==1 {a= Modmul(a,s,m)}
 		if z.iszilch() {break}
 		s=modsqr(s,m)
 	}
 	return a;
 }
 
-/* Arazi and Qi inversion mod 256 */
+/* Arazi and Qi inversion Mod 256 */
 func invmod256(a int) int {
 	var t1 int=0
 	c:=(a>>1)&1
@@ -916,15 +916,15 @@ func main() {
 	a := NewBIGint(3)
 	m := NewBIGints(Modulus)
 
-	fmt.Printf("Modulus= "+m.toString())
+	fmt.Printf("Modulus= "+m.ToString())
 	fmt.Printf("\n")
 
 
 	e := NewBIGcopy(m);
-	e.dec(1); e.norm();
-	fmt.Printf("Exponent= "+e.toString())
+	e.Dec(1); e.norm();
+	fmt.Printf("Exponent= "+e.ToString())
 	fmt.Printf("\n")
 	a=a.powmod(e,m);
-	fmt.Printf("Result= "+a.toString())
+	fmt.Printf("Result= "+a.ToString())
 }
 */

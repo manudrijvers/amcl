@@ -159,7 +159,7 @@ func (r *DBIG) shr(k uint) {
 	for i:=DNLEN-m;i<DNLEN;i++ {r.w[i]=0}
 }
 
-/* reduces this DBIG mod a BIG, and returns the BIG */
+/* reduces this DBIG Mod a BIG, and returns the BIG */
 func (r *DBIG) mod(c *BIG) *BIG {
 	r.norm()
 	m:=NewDBIGscopy(c)
@@ -186,7 +186,7 @@ func (r *DBIG) mod(c *BIG) *BIG {
 		r.cmove(dr,int(1-((dr.w[DNLEN-1]>>uint(CHUNK-1))&1)));
 /*
 		if dcomp(r,m)>=0 {
-			r.sub(m);
+			r.Sub(m);
 			r.norm();
 		} */
 		k--;
@@ -221,15 +221,15 @@ func (r *DBIG) div(c *BIG) *BIG {
 		d=int(1-((dr.w[DNLEN-1]>>uint(CHUNK-1))&1));
 		r.cmove(dr,d);
 		sr.copy(a);
-		sr.add(e);
+		sr.Add(e);
 		sr.norm();
 		a.cmove(sr,d);
 
 /*
 		if dcomp(r,m)>0 {
-			a.add(e)
+			a.Add(e)
 			a.norm()
-			r.sub(m)
+			r.Sub(m)
 			r.norm()
 		} */
 		k--

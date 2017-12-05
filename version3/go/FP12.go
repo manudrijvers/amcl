@@ -63,7 +63,7 @@ func NewFP12copy(x *FP12) *FP12 {
 	return F
 }
 
-/* reduce all components of this mod Modulus */
+/* reduce all components of this Mod Modulus */
 func (F *FP12) reduce() {
 	F.a.reduce()
 	F.b.reduce()
@@ -198,7 +198,7 @@ func (F *FP12)  sqr() {
 }
 
 /* FP12 full multiplication this=this*y */
-func (F *FP12) mul(y *FP12) {
+func (F *FP12) Mul(y *FP12) {
 	z0:=NewFP4copy(F.a)
 	z1:=NewFP4int(0)
 	z2:=NewFP4copy(F.b)
@@ -298,7 +298,7 @@ func (F *FP12) smul(y *FP12,twist int ) {
 		t0.copy(F.b); t0.add(F.c)
 		t0.norm()
 
-		z3.copy(t0) //z3.mul(y.c);
+		z3.copy(t0) //z3.Mul(y.c);
 		z3.pmul(y.c.getb())
 		z3.times_i()
 
@@ -336,7 +336,7 @@ func (F *FP12) smul(y *FP12,twist int ) {
 }
 
 /* this=1/this */
-func (F *FP12) inverse() {
+func (F *FP12) Inverse() {
 	f0:=NewFP4copy(F.a)
 	f1:=NewFP4copy(F.b)
 	f2:=NewFP4copy(F.a)
@@ -402,46 +402,46 @@ func FP12_fromBytes(w []byte) *FP12 {
 	MB:=int(MODBYTES)
 
 	for i:=0;i<MB;i++ {t[i]=w[i]}
-	a:=fromBytes(t[:])
+	a:= FromBytes(t[:])
 	for i:=0;i<MB;i++ {t[i]=w[i+MB]}
-	b:=fromBytes(t[:])
+	b:= FromBytes(t[:])
 	c:=NewFP2bigs(a,b)
 
 	for i:=0;i<MB;i++ {t[i]=w[i+2*MB]}
-	a=fromBytes(t[:])
+	a= FromBytes(t[:])
 	for i:=0;i<MB;i++ {t[i]=w[i+3*MB]}
-	b=fromBytes(t[:])
+	b= FromBytes(t[:])
 	d:=NewFP2bigs(a,b)
 
 	e:=NewFP4fp2s(c,d)
 
 
 	for i:=0;i<MB;i++ {t[i]=w[i+4*MB]}
-	a=fromBytes(t[:])
+	a= FromBytes(t[:])
 	for i:=0;i<MB;i++ {t[i]=w[i+5*MB]}
-	b=fromBytes(t[:])
+	b= FromBytes(t[:])
 	c=NewFP2bigs(a,b)
 
 	for i:=0;i<MB;i++ {t[i]=w[i+6*MB]}
-	a=fromBytes(t[:])
+	a= FromBytes(t[:])
 	for i:=0;i<MB;i++ {t[i]=w[i+7*MB]}
-	b=fromBytes(t[:])
+	b= FromBytes(t[:])
 	d=NewFP2bigs(a,b)
 
 	f:=NewFP4fp2s(c,d)
 
 
 	for i:=0;i<MB;i++ {t[i]=w[i+8*MB]}
-	a=fromBytes(t[:])
+	a= FromBytes(t[:])
 	for i:=0;i<MB;i++ {t[i]=w[i+9*MB]}
-	b=fromBytes(t[:]);
+	b= FromBytes(t[:]);
 		
 	c=NewFP2bigs(a,b)
 
 	for i:=0;i<MB;i++ {t[i]=w[i+10*MB]}
-	a=fromBytes(t[:])
+	a= FromBytes(t[:])
 	for i:=0;i<MB;i++ {t[i]=w[i+11*MB]}
-	b=fromBytes(t[:])
+	b= FromBytes(t[:])
 	d=NewFP2bigs(a,b)
 
 	g:=NewFP4fp2s(c,d)
@@ -450,44 +450,44 @@ func FP12_fromBytes(w []byte) *FP12 {
 }
 
 /* convert this to byte array */
-func (F *FP12) toBytes(w []byte) {
+func (F *FP12) ToBytes(w []byte) {
 	var t [int(MODBYTES)]byte
 	MB:=int(MODBYTES)
-	F.a.geta().getA().toBytes(t[:])
+	F.a.geta().GetA().ToBytes(t[:])
 	for i:=0;i<MB;i++ {w[i]=t[i]}
-	F.a.geta().getB().toBytes(t[:])
+	F.a.geta().GetB().ToBytes(t[:])
 	for i:=0;i<MB;i++ {w[i+MB]=t[i]}
-	F.a.getb().getA().toBytes(t[:])
+	F.a.getb().GetA().ToBytes(t[:])
 	for i:=0;i<MB;i++ {w[i+2*MB]=t[i]}
-	F.a.getb().getB().toBytes(t[:])
+	F.a.getb().GetB().ToBytes(t[:])
 	for i:=0;i<MB;i++ {w[i+3*MB]=t[i]}
 
-	F.b.geta().getA().toBytes(t[:])
+	F.b.geta().GetA().ToBytes(t[:])
 	for i:=0;i<MB;i++ {w[i+4*MB]=t[i]}
-	F.b.geta().getB().toBytes(t[:])
+	F.b.geta().GetB().ToBytes(t[:])
 	for i:=0;i<MB;i++ {w[i+5*MB]=t[i]}
-	F.b.getb().getA().toBytes(t[:])
+	F.b.getb().GetA().ToBytes(t[:])
 	for i:=0;i<MB;i++ {w[i+6*MB]=t[i]}
-	F.b.getb().getB().toBytes(t[:])
+	F.b.getb().GetB().ToBytes(t[:])
 	for i:=0;i<MB;i++ {w[i+7*MB]=t[i]}
 
-	F.c.geta().getA().toBytes(t[:])
+	F.c.geta().GetA().ToBytes(t[:])
 	for i:=0;i<MB;i++ {w[i+8*MB]=t[i]}
-	F.c.geta().getB().toBytes(t[:])
+	F.c.geta().GetB().ToBytes(t[:])
 	for i:=0;i<MB;i++ {w[i+9*MB]=t[i]}
-	F.c.getb().getA().toBytes(t[:])
+	F.c.getb().GetA().ToBytes(t[:])
 	for i:=0;i<MB;i++ {w[i+10*MB]=t[i]}
-	F.c.getb().getB().toBytes(t[:])
+	F.c.getb().GetB().ToBytes(t[:])
 	for i:=0;i<MB;i++ {w[i+11*MB]=t[i]}
 }
 
 /* convert to hex string */
-func (F *FP12) toString() string {
+func (F *FP12) ToString() string {
 	return ("["+F.a.toString()+","+F.b.toString()+","+F.c.toString()+"]")
 }
 
 /* this=this^e */ 
-func (F *FP12) pow(e *BIG) *FP12 {
+func (F *FP12) Pow(e *BIG) *FP12 {
 	F.norm()
 	e.norm()
 	w:=NewFP12copy(F)
@@ -497,7 +497,7 @@ func (F *FP12) pow(e *BIG) *FP12 {
 	for true {
 		bt:=z.parity()
 		z.fshr(1)
-		if bt==1 {r.mul(w)}
+		if bt==1 {r.Mul(w)}
 		if z.iszilch() {break}
 		w.usqr()
 	}
@@ -513,7 +513,7 @@ func (F *FP12) pinpow(e int,bts int) {
 
 	for i:=bts-1;i>=0;i-- {
 		b:=(e>>uint(i))&1
-		R[1-b].mul(R[b])
+		R[1-b].Mul(R[b])
 		R[b].usqr()
 	}
 	F.Copy(R[0])
@@ -526,10 +526,10 @@ func (F *FP12) Compow(e *BIG,r *BIG) *FP4 {
 	f:=NewFP2bigs(NewBIGints(Fra),NewBIGints(Frb))
 
 	m:=NewBIGcopy(q)
-	m.mod(r)
+	m.Mod(r)
 
 	a:=NewBIGcopy(e)
-	a.mod(m)
+	a.Mod(m)
 
 	b:=NewBIGcopy(e)
 	b.div(m)
@@ -542,9 +542,9 @@ func (F *FP12) Compow(e *BIG,r *BIG) *FP4 {
 	cp:=g2.trace()
 
 	g1.conj()
-	g2.mul(g1)
+	g2.Mul(g1)
 	cpm1:=g2.trace()
-	g2.mul(g1)
+	g2.Mul(g1)
 	cpm2:=g2.trace()
 
 	c=c.xtr_pow2(cp,cpm1,cpm2,a,b)
@@ -571,34 +571,34 @@ func (F *FP12) Compow(e *BIG,r *BIG) *FP4 {
 	s=append(s,NewFP12int(0))
 	s=append(s,NewFP12int(0))
 
-	g=append(g,NewFP12copy(q[0])); s[0].Copy(q[1]); s[0].conj(); g[0].mul(s[0])
+	g=append(g,NewFP12copy(q[0])); s[0].Copy(q[1]); s[0].conj(); g[0].Mul(s[0])
 	g=append(g,NewFP12copy(g[0]))
 	g=append(g,NewFP12copy(g[0]))
 	g=append(g,NewFP12copy(g[0]))
-	g=append(g,NewFP12copy(q[0])); g[4].mul(q[1])
+	g=append(g,NewFP12copy(q[0])); g[4].Mul(q[1])
 	g=append(g,NewFP12copy(g[4]))
 	g=append(g,NewFP12copy(g[4]))
 	g=append(g,NewFP12copy(g[4]))
 
-	s[1].Copy(q[2]); s[0].Copy(q[3]); s[0].conj(); s[1].mul(s[0])
-	s[0].Copy(s[1]); s[0].conj(); g[1].mul(s[0])
-	g[2].mul(s[1])
-	g[5].mul(s[0])
-	g[6].mul(s[1])
-	s[1].Copy(q[2]); s[1].mul(q[3])
-	s[0].Copy(s[1]); s[0].conj(); g[0].mul(s[0])
-	g[3].mul(s[1])
-	g[4].mul(s[0])
-	g[7].mul(s[1])
+	s[1].Copy(q[2]); s[0].Copy(q[3]); s[0].conj(); s[1].Mul(s[0])
+	s[0].Copy(s[1]); s[0].conj(); g[1].Mul(s[0])
+	g[2].Mul(s[1])
+	g[5].Mul(s[0])
+	g[6].Mul(s[1])
+	s[1].Copy(q[2]); s[1].Mul(q[3])
+	s[0].Copy(s[1]); s[0].conj(); g[0].Mul(s[0])
+	g[3].Mul(s[1])
+	g[4].Mul(s[0])
+	g[7].Mul(s[1])
 
-/* if power is even add 1 to power, and add q to correction */
+/* if power is even Add 1 to power, and Add q to correction */
 
 	for i:=0;i<4;i++ {
 		if t[i].parity()==0 {
-			t[i].inc(1); t[i].norm()
-			c.mul(q[i])
+			t[i].Inc(1); t[i].norm()
+			c.Mul(q[i])
 		}
-		mt.add(t[i]); mt.norm()
+		mt.Add(t[i]); mt.norm()
 	}
 	c.conj()
 	nb:=1+mt.nbits()
@@ -607,7 +607,7 @@ func (F *FP12) Compow(e *BIG,r *BIG) *FP4 {
 	for j:=0;j<nb;j++ {
 		for i:=0;i<4;i++ {
 			a[i]=int8(t[i].lastbits(2)-2)
-			t[i].dec(int(a[i])); t[i].norm();
+			t[i].Dec(int(a[i])); t[i].norm();
 			t[i].fshr(1)
 		}
 		w[j]=(8*a[0]+4*a[1]+2*a[2]+a[3])
@@ -621,9 +621,9 @@ func (F *FP12) Compow(e *BIG,r *BIG) *FP4 {
 		j=(j-1)/2
 		s[0].Copy(g[j]); s[1].Copy(g[j]); s[1].conj()
 		p.usqr()
-		p.mul(s[m&1]);
+		p.Mul(s[m&1]);
 	}
-	p.mul(c)  /* apply correction */
+	p.Mul(c) /* apply correction */
 	p.reduce()
 	return p;
 }

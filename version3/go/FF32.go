@@ -137,7 +137,7 @@ func (F *FF) one() {
 	}
 }
 
-/* test equals 0 */
+/* test Equals 0 */
 func (F *FF) iszilch() bool {
 	for i:=0;i<F.length;i++ {
 		if !F.v[i].iszilch() {return false}
@@ -179,51 +179,51 @@ func ff_comp(a *FF,b *FF) int {
 	return 0
 }
 
-/* recursive add */
+/* recursive Add */
 func (F *FF) radd(vp int,x *FF,xp int,y *FF,yp int,n int) {
 	for i:=0;i<n;i++ {
 		F.v[vp+i].copy(x.v[xp+i])
-		F.v[vp+i].add(y.v[yp+i])
+		F.v[vp+i].Add(y.v[yp+i])
 	}
 }
 
-/* recursive inc */
+/* recursive Inc */
 func (F *FF) rinc(vp int,y *FF,yp int,n int) {
 	for i:=0;i<n;i++ {
-		F.v[vp+i].add(y.v[yp+i])
+		F.v[vp+i].Add(y.v[yp+i])
 	}
 }
 
-/* recursive sub */
+/* recursive Sub */
 func (F *FF) rsub(vp int,x *FF,xp int,y *FF,yp int,n int) {
 	for i:=0;i<n;i++ {
 		F.v[vp+i].copy(x.v[xp+i])
-		F.v[vp+i].sub(y.v[yp+i])
+		F.v[vp+i].Sub(y.v[yp+i])
 	}
 }
 
-/* recursive dec */
+/* recursive Dec */
 func (F *FF) rdec(vp int,y *FF,yp int,n int) {
 	for i:=0;i<n;i++ {
-		F.v[vp+i].sub(y.v[yp+i])
+		F.v[vp+i].Sub(y.v[yp+i])
 	}
 }
 
-/* simple add */
+/* simple Add */
 func (F *FF) add(b *FF) {
 	for i:=0;i<F.length;i++ {
-		F.v[i].add(b.v[i])
+		F.v[i].Add(b.v[i])
 	}
 }
 
-/* simple sub */
+/* simple Sub */
 func (F *FF) sub(b *FF) {
 	for i:=0;i<F.length;i++ {
-		F.v[i].sub(b.v[i])
+		F.v[i].Sub(b.v[i])
 	}
 }
 	
-/* reverse sub */
+/* reverse Sub */
 func (F *FF) revsub(b *FF) {
 	for i:=0;i<F.length;i++ {
 		F.v[i].rsub(b.v[i])
@@ -241,7 +241,7 @@ func (F *FF) rnorm(vp int,n int) {
 	for i:=0;i<n-1;i++ {
 		carry=F.v[vp+i].norm()
 		F.v[vp+i].xortop(carry<<P_TBITS)
-		F.v[vp+i+1].w[0]+=carry; // inc(carry)
+		F.v[vp+i+1].w[0]+=carry; // Inc(carry)
 	}
 	carry=F.v[vp+n-1].norm()
 	if trunc {
@@ -255,12 +255,12 @@ func (F *FF) norm() {
 
 /* increment/decrement by a small integer */
 func (F *FF) inc(m int) {
-	F.v[0].inc(m)
+	F.v[0].Inc(m)
 	F.norm()
 }
 
 func (F *FF) dec(m int) {
-	F.v[0].dec(m)
+	F.v[0].Dec(m)
 	F.norm()
 }
 
@@ -269,12 +269,12 @@ func (F *FF) shl() {
 	var delay_carry int=0
 	for i:=0;i<F.length-1;i++ {
 		carry:=F.v[i].fshl(1)
-		F.v[i].inc(delay_carry)
+		F.v[i].Inc(delay_carry)
 		F.v[i].xortop(Chunk(carry)<<P_TBITS)
 		delay_carry=int(carry)
 	}
 	F.v[F.length-1].fshl(1)
-	F.v[F.length-1].inc(delay_carry)
+	F.v[F.length-1].Inc(delay_carry)
 }
 
 /* shift right by one bit */
@@ -292,7 +292,7 @@ func (F *FF) toString() string {
 	F.norm()
 	s:=""
 	for i:=F.length-1;i>=0;i-- {
-		s+=F.v[i].toString()
+		s+=F.v[i].ToString()
 	}
 	return s
 }
@@ -417,7 +417,7 @@ func (F *FF) lmul(y *FF) {
 	F.karmul_lower(0,x,0,y,0,t,0,n)
 }
 
-/* Set b=b mod c */
+/* Set b=b Mod c */
 func (F *FF) mod(c *FF) {
 	var k int=1  
 
@@ -449,7 +449,7 @@ func ff_sqr(x *FF) *FF {
 	return z
 }
 
-/* return This mod modulus, N is modulus, ND is Montgomery Constant */
+/* return This Mod modulus, N is modulus, ND is Montgomery Constant */
 func (F *FF) reduce(N *FF,ND *FF) *FF { /* fast karatsuba Montgomery reduction */
 	n:=N.length
 	t:=NewFFint(2*n)
@@ -470,7 +470,7 @@ func (F *FF) reduce(N *FF,ND *FF) *FF { /* fast karatsuba Montgomery reduction *
 
 }
 
-/* Set r=this mod b */
+/* Set r=this Mod b */
 /* this is of length - 2*n */
 /* r,b is of length - n */
 func (F *FF) dmod(b *FF) *FF {
@@ -503,7 +503,7 @@ func (F *FF) dmod(b *FF) *FF {
 	return r
 }
 
-/* Set return=1/this mod p. Binary method - a<p on entry */
+/* Set return=1/this Mod p. Binary method - a<p on entry */
 
 func (F *FF) invmodp(p *FF) {
 	n:=p.length
@@ -570,7 +570,7 @@ func (F *FF) invmodp(p *FF) {
 	}
 }
 
-/* nresidue mod m */
+/* nresidue Mod m */
 func (F *FF) nres(m *FF) {
 	n:=m.length
 	if n==1 {
@@ -604,7 +604,7 @@ func (F *FF) mod2m(m int) {
 	}
 }
 
-/* U=1/a mod 2^m - Arazi & Qi */
+/* U=1/a Mod 2^m - Arazi & Qi */
 func (F *FF) invmod2m() *FF {
 	n:=F.length
 
@@ -655,7 +655,7 @@ func (F *FF) Randomnum(p *FF,rng *amcl.RAND) {
 	F.copy(d.dmod(p))
 }
 
-/* this*=y mod p */
+/* this*=y Mod p */
 func (F *FF) modmul(y *FF,p *FF,nd *FF) {
 	if ff_pexceed(F.v[F.length-1],y.v[y.length-1]) {F.mod(p)}
 	n:=p.length
@@ -668,7 +668,7 @@ func (F *FF) modmul(y *FF,p *FF,nd *FF) {
 	}
 }
 
-/* this*=y mod p */
+/* this*=y Mod p */
 func (F *FF) modsqr(p *FF,nd *FF) {
 	if ff_sexceed(F.v[F.length-1]) {F.mod(p)}
 	n:=p.length
@@ -681,7 +681,7 @@ func (F *FF) modsqr(p *FF,nd *FF) {
 	}
 }
 
-/* this=this^e mod p using side-channel resistant Montgomery Ladder, for large e */
+/* this=this^e Mod p using side-channel resistant Montgomery Ladder, for large e */
 func (F *FF) skpow(e *FF,p *FF) {
 	n:=p.length
 	R0:=NewFFint(n)
@@ -709,7 +709,7 @@ func (F *FF) skpow(e *FF,p *FF) {
 	F.redc(p,ND)
 }
 
-/* this =this^e mod p using side-channel resistant Montgomery Ladder, for short e */
+/* this =this^e Mod p using side-channel resistant Montgomery Ladder, for short e */
 func (F *FF) skpows(e *BIG,p *FF) {
 	n:=p.length
 	R0:=NewFFint(n)
@@ -761,11 +761,11 @@ func (F *FF) power(e int,p *FF) {
 			}
 			e>>=1
 			if e==0 {break}
-//fmt.Printf("wb= "+w.toString()+"\n");
+//fmt.Printf("wb= "+w.ToString()+"\n");
 //debug=true;
 			w.modsqr(p,ND)
 //debug=false;
-//fmt.Printf("wa= "+w.toString()+"\n");
+//fmt.Printf("wa= "+w.ToString()+"\n");
 //i+=1;
 //os.Exit(0);
 		}
@@ -775,12 +775,12 @@ func (F *FF) power(e int,p *FF) {
 
 }
 
-/* this=this^e mod p, faster but not side channel resistant */
+/* this=this^e Mod p, faster but not side channel resistant */
 func (F *FF) pow(e *FF,p *FF) {
 	n:=p.length
 	w:=NewFFint(n)
 	ND:=p.invmod2m()
-//fmt.Printf("ND= "+ND.toString() +"\n");
+//fmt.Printf("ND= "+ND.ToString() +"\n");
 	w.copy(F)
 	F.one()
 	F.nres(p)
@@ -793,7 +793,7 @@ func (F *FF) pow(e *FF,p *FF) {
 	F.redc(p,ND)
 }
 
-/* double exponentiation r=x^e.y^f mod p */
+/* double exponentiation r=x^e.y^f Mod p */
 func (F *FF) pow2(e *BIG,y *FF,f *BIG,p *FF) {
 	n:=p.length
 	xn:=NewFFint(n)
@@ -932,12 +932,12 @@ func main() {
 
 	e:=NewFFint(n)
 	e.copy(p)
-	e.dec(1); e.norm()
+	e.Dec(1); e.norm()
 
-	fmt.Printf("e= "+e.toString())
+	fmt.Printf("e= "+e.ToString())
 	fmt.Printf("\n")
 	x.skpow(e,p)
-	fmt.Printf("x= "+x.toString())
+	fmt.Printf("x= "+x.ToString())
 	fmt.Printf("\n")
 }
 */

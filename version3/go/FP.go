@@ -18,7 +18,7 @@ under the License.
 */
 
 /* Finite Field arithmetic */
-/* CLINT mod p functions */
+/* CLINT Mod p functions */
 
 package XXX
 
@@ -30,7 +30,7 @@ const MONTGOMERY_FRIENDLY int=2
 const GENERALISED_MERSENNE int=3
 
 const MODBITS uint=@NBT@ /* Number of bits in Modulus */
-const MOD8 uint=@M8@  /* Modulus mod 8 */
+const MOD8 uint=@M8@  /* Modulus Mod 8 */
 const MODTYPE int=@MT@ //NOT_SPECIAL
 
 const FEXCESS int32=(int32(1)<<@SH@)
@@ -67,7 +67,7 @@ func NewFPcopy(a *FP) *FP {
 }
 
 func (F *FP) toString() string {
-	return F.redc().toString()
+	return F.redc().ToString()
 }
 
 /* convert to Montgomery n-residue form */
@@ -102,7 +102,7 @@ func mod(d *DBIG) *BIG {
 
 		v:=t.pmul(int(MConst))
 
-		t.add(b)
+		t.Add(b)
 		t.norm()
 
 		tw:=t.w[NLEN-1]
@@ -111,7 +111,7 @@ func mod(d *DBIG) *BIG {
 
 		t.norm()
 		return t
-	//	b.add(t)
+	//	b.Add(t)
 	//	b.norm()
 	//	return b		
 	}
@@ -133,17 +133,17 @@ func mod(d *DBIG) *BIG {
 	if MODTYPE==GENERALISED_MERSENNE { // GoldiLocks only
 		t:=d.split(MODBITS)
 		b:=NewBIGdcopy(d)
-		b.add(t);
+		b.Add(t);
 		dd:=NewDBIGscopy(t)
 		dd.shl(MODBITS/2)
 
 		tt:=dd.split(MODBITS)
 		lo:=NewBIGdcopy(dd)
-		b.add(tt)
-		b.add(lo)
+		b.Add(tt)
+		b.Add(lo)
 		b.norm()
 		tt.shl(MODBITS/2)
-		b.add(tt)
+		b.Add(tt)
 
 		carry:=b.w[NLEN-1]>>TBITS
 		b.w[NLEN-1]&=TMASK
@@ -162,10 +162,10 @@ func mod(d *DBIG) *BIG {
 }
 
 
-/* reduce this mod Modulus */
+/* reduce this Mod Modulus */
 func (F *FP) reduce() {
 	p:=NewBIGints(Modulus)
-	F.x.mod(p)
+	F.x.Mod(p)
 	F.XES=1
 }
 
@@ -214,7 +214,7 @@ func (F *FP) cmove(b *FP,d int) {
 	F.XES^=(F.XES^b.XES)&c
 }
 
-/* this*=b mod Modulus */
+/* this*=b Mod Modulus */
 func (F *FP) mul(b *FP) {
 
 	if int64(F.XES)*int64(b.XES)>int64(FEXCESS) {F.reduce()}
@@ -224,7 +224,7 @@ func (F *FP) mul(b *FP) {
 	F.XES=2
 }
 
-/* this = -this mod Modulus */
+/* this = -this Mod Modulus */
 func (F *FP) neg() {
 	m:=NewBIGints(Modulus)
 	sb:=logb2(uint32(F.XES-1))
@@ -237,7 +237,7 @@ func (F *FP) neg() {
 }
 
 
-/* this*=c mod Modulus, where c is a small int */
+/* this*=c Mod Modulus, where c is a small int */
 func (F *FP) imul(c int) {
 //	F.norm()
 	s:=false
@@ -262,7 +262,7 @@ func (F *FP) imul(c int) {
 	if s {F.neg(); F.norm()}
 }
 
-/* this*=this mod Modulus */
+/* this*=this Mod Modulus */
 func (F *FP) sqr() {
 	if int64(F.XES)*int64(F.XES)>int64(FEXCESS) {F.reduce()}	
 	d:=sqr(F.x)	
@@ -272,7 +272,7 @@ func (F *FP) sqr() {
 
 /* this+=b */
 func (F *FP) add(b *FP) {
-	F.x.add(b.x)
+	F.x.Add(b.x)
 	F.XES+=b.XES
 	if (F.XES>FEXCESS) {F.reduce()}
 }
@@ -289,24 +289,24 @@ func (F *FP) rsub(b *FP) {
 	F.add(b)
 }
 
-/* this/=2 mod Modulus */
+/* this/=2 Mod Modulus */
 func (F *FP) div2() {
 //	F.x.norm()
 	if (F.x.parity()==0) {
 		F.x.fshr(1)
 	} else {
 		p:=NewBIGints(Modulus);
-		F.x.add(p)
+		F.x.Add(p)
 		F.x.norm()
 		F.x.fshr(1)
 	}
 }
 
-/* this=1/this mod Modulus */
+/* this=1/this Mod Modulus */
 func (F *FP) inverse() {
 	p:=NewBIGints(Modulus);
 	r:=F.redc()
-	r.invmodp(p)
+	r.Invmodp(p)
 	F.x.copy(r)
 	F.nres()
 }
@@ -319,7 +319,7 @@ func (F *FP) equals(a *FP) bool {
 	return false
 }
 
-/* return this^e mod Modulus */
+/* return this^e Mod Modulus */
 func (F *FP) pow(e *BIG) *FP {
 	r:=NewFPint(1)
 	e.norm()
@@ -333,27 +333,27 @@ func (F *FP) pow(e *BIG) *FP {
 		m.sqr();
 	}
 	p:=NewBIGints(Modulus);
-	r.x.mod(p);
+	r.x.Mod(p);
 	return r;
 }
 
-/* return sqrt(this) mod Modulus */
+/* return sqrt(this) Mod Modulus */
 func (F *FP) sqrt() *FP {
 	F.reduce();
 	p:=NewBIGints(Modulus);
 	b:=NewBIGcopy(p)
 	if MOD8==5 {
-		b.dec(5); b.norm(); b.shr(3)
+		b.Dec(5); b.norm(); b.shr(3)
 		i:=NewFPcopy(F); i.x.shl(1)
 		v:=i.pow(b)
 		i.mul(v); i.mul(v)
-		i.x.dec(1)
+		i.x.Dec(1)
 		r:=NewFPcopy(F)
 		r.mul(v); r.mul(i) 
 		r.reduce()
 		return r
 	} else {
-		b.inc(1); b.norm(); b.shr(2)
+		b.Inc(1); b.norm(); b.shr(2)
 		return F.pow(b);
 	}
 }
